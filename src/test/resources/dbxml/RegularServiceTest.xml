@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+
+    <u_device id="2" type="2" name="激发器" sn="11111112"  voltage="2" enable="1" state="1" createTime="2013-02-25 12:01:01"  siteId="123"/>
+    <u_device id="3" type="2" name="激发器2" sn="22222222" voltage="2.5" enable="1" state="1" createTime="2013-02-25 12:01:01"  siteId="123"/>
+    <u_device id="4" type="2" name="激发器3" sn="11112111"  voltage="2" enable="1" state="1" createTime="2013-02-25 12:01:01"  siteId="123"/>
+    <u_device id="5" type="2" name="激发器4" sn="222222123" voltage="2.5" enable="1" state="1" createTime="2013-02-25 12:01:01"  siteId="123"/>
+    
+    <u_action_templet id="1" parentId="0" name="规则1" type="1" enable="1" siteId="31010101"/>
+    <u_action_templet id="2" parentId="0" name="规则2" type="1" enable="1" siteId="31010101"/>
+    <u_action_templet id="3" parentId="0" name="规则3" type="1" enable="1" siteId="31010101"/>
+    <u_action_templet id="4" parentId="0" name="往返规则" type="2" enable="1" siteId="31010101"/>
+    
+    <u_user_action id="1" userId="100" actionTempletId="1" type="1" occurrenceTime="1366954081646"/>
+    <u_user_action id="2" userId="100" actionTempletId="1" type="1" occurrenceTime="1366954081647"/>
+    <u_user_action id="3" userId="101" actionTempletId="2" type="1" occurrenceTime="1366954081646"/>
+    
+    
+</dataset>

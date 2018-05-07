@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<packs>
+	<!-- pack：type 主要是区别是上行还是下行-->
+	<!--[STX	MSG LEN	FLAGS	COMMAND	ID	S/N	PIN	ENC CHK	{DATA}	CRC] -->
+	<pack id="" type="">
+		<STX length="1">06</STX>
+		<MSG-LEN length=""></MSG-LEN>
+		<FLAGS length=""></FLAGS>
+		<COMMAND length=""></COMMAND>
+	</pack>
+</packs>

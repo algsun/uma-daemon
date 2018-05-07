@@ -1,0 +1,276 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.microwise.galaxy.uma</groupId>
+	<artifactId>uma-daemon</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>war</packaging>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<productDatabase>galaxy_product</productDatabase>
+		<devDatabase>galaxy_dev</devDatabase>
+		<testDatabase>uma_daemon_test</testDatabase>
+		<dbHost>127.0.0.1</dbHost>
+		<dbPort>3306</dbPort>
+		<shiro.version>1.2.1</shiro.version>
+		<struts.version>2.3.8</struts.version>
+	</properties>
+
+	<dependencies>
+		<!-- junit 测试 -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+			<scope>test</scope>
+		</dependency>
+		<!-- 测试：spring支持 -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>3.1.2.RELEASE</version>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- DBunit自动化测试 -->
+		<dependency>
+			<groupId>org.dbunit</groupId>
+			<artifactId>dbunit</artifactId>
+			<version>2.4.9</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>2.5</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- spring -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
+			<version>3.1.2.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-orm</artifactId>
+			<version>3.1.2.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>cglib</groupId>
+			<artifactId>cglib</artifactId>
+			<version>2.2.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjweaver</artifactId>
+			<version>1.6.0</version>
+		</dependency>
+		<!-- quartz（定时器）任务调度 -->
+		<dependency>
+			<groupId>org.quartz-scheduler</groupId>
+			<artifactId>quartz</artifactId>
+			<version>2.1.7</version>
+		</dependency>
+		<!-- mock <dependency> <groupId>org.springframework</groupId> <artifactId>spring-mock</artifactId> 
+			<version>2.0.8</version> <scope>provided</scope> </dependency> -->
+
+		<!-- guava工具组件 -->
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>14.0</version>
+		</dependency>
+		<!-- log4j -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.7.5</version>
+		</dependency>
+
+		<!-- mina -->
+		<dependency>
+			<groupId>org.apache.mina</groupId>
+			<artifactId>mina-core</artifactId>
+			<version>2.0.7</version>
+		</dependency>
+
+
+		<!-- 连接mysql -->
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>5.1.21</version>
+		</dependency>
+
+		<!-- mybatis -->
+		<dependency>
+			<groupId>org.mybatis</groupId>
+			<artifactId>mybatis</artifactId>
+			<version>3.2.0</version>
+		</dependency>
+
+		<!-- mybatis结合spring -->
+		<dependency>
+			<groupId>org.mybatis</groupId>
+			<artifactId>mybatis-spring</artifactId>
+			<version>1.2.0</version>
+		</dependency>
+
+		<!--c3p0 连接池 -->
+		<dependency>
+			<groupId>c3p0</groupId>
+			<artifactId>c3p0</artifactId>
+			<version>0.9.1.2</version>
+		</dependency>
+		<!--Perl <dependency> <groupId>oro</groupId> <artifactId>oro</artifactId> 
+			<version>2.0.8</version> </dependency> -->
+
+		<!--gson -->
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.2.4</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<finalName>uma-daemon</finalName>
+		<plugins>
+			<!-- 数据库插件, 测试执行新重新构建数据库(1.删库 2.建库 3.建表 4.初始化数据) -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>sql-maven-plugin</artifactId>
+				<version>1.5</version>
+
+				<dependencies>
+					<dependency>
+						<groupId>mysql</groupId>
+						<artifactId>mysql-connector-java</artifactId>
+						<version>5.1.21</version>
+					</dependency>
+				</dependencies>
+
+				<!-- common configuration shared by all executions -->
+				<configuration>
+					<driver>com.mysql.jdbc.Driver</driver>
+					<url>jdbc:mysql://localhost:3306/${testDatabase}</url>
+					<username>microwise</username>
+					<password>microwise</password>
+				</configuration>
+
+				<executions>
+					<execution>
+						<id>drop-create-db</id>
+						<phase>process-test-resources</phase>
+						<goals>
+							<goal>execute</goal>
+						</goals>
+						<configuration>
+							<!-- need another database to drop the targeted one -->
+							<url>jdbc:mysql://localhost:3306/test</url>
+							<autocommit>true</autocommit>
+							<sqlCommand>DROP DATABASE IF EXISTS `${testDatabase}`</sqlCommand>
+							<sqlCommand>CREATE DATABASE IF NOT EXISTS `${testDatabase}`</sqlCommand>
+							<!-- ignore error when database is not avaiable -->
+							<!--<onError>continue</onError> -->
+							<skip>${skipTests}</skip>
+						</configuration>
+					</execution>
+
+					<execution>
+						<!-- 创建表，初始化数据 -->
+						<id>init-database</id>
+						<phase>process-test-resources</phase>
+						<goals>
+							<goal>execute</goal>
+						</goals>
+						<configuration>
+							<skip>${skipTests}</skip>
+							<autocommit>true</autocommit>
+							<srcFiles>
+								<!-- 表 -->
+								<srcFile>src/main/sql/galaxy-schema-all.sql</srcFile>
+								<!-- 初始化数据 -->
+								<srcFile>src/main/sql/galaxy-data-all.sql</srcFile>
+							</srcFiles>
+						</configuration>
+					</execution>
+
+					<execution>
+						<!-- 创建表，初始化数据 -->
+						<id>init-database2</id>
+						<phase>process-test-resources</phase>
+						<goals>
+							<goal>execute</goal>
+						</goals>
+						<configuration>
+							<skip>${skipTests}</skip>
+							<delimiter>;;</delimiter>
+							<srcFiles>
+								<!-- 视图/函数/存储过程 -->
+								<srcFile>src/main/sql/galaxy-block-all.sql</srcFile>
+							</srcFiles>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+            <!-- 产生svn版本号 -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>buildnumber-maven-plugin</artifactId>
+                <version>1.2</version>
+                <executions>
+                    <execution>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>create</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <doCheck>true</doCheck>
+                    <doUpdate>false</doUpdate>
+                </configuration>
+            </plugin>
+            <!-- 将版本号写入MANIFEST.MF 文件 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                        </manifest>
+                        <manifestEntries>
+                            <App-Version>${project.version}</App-Version>
+                            <App-Svn-Revision>${buildNumber}</App-Svn-Revision>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+
+            <!-- 将项目打 zip 与 tar.gz 包 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <descriptorRefs>
+                        <descriptorRef>src</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+            </plugin>
+		</plugins>
+	</build>
+
+    <scm>
+        <url>http://192.168.0.102/svn/galaxy/source/trunk/uma-daemon</url>
+        <!-- 版本库地址, buildNumber 插件使用 -->
+        <connection>scm:svn:http://192.168.0.102/svn/galaxy/source/trunk/uma-daemon</connection>
+    </scm>
+</project>

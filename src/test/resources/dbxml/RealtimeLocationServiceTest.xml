@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+  <u_realtime_location id="1" userId="1" deviceId="01" occurrenceTime="1367031397562" />
+  <u_realtime_location id="2" userId="2" deviceId="02" occurrenceTime="1367031397563" />
+  <u_realtime_location id="3" userId="3" deviceId="03" occurrenceTime="1367031397564" />
+  <u_realtime_location id="4" userId="4" deviceId="04" occurrenceTime="1367031397565" />
+</dataset>

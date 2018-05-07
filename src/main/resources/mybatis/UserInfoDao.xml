@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mybatis.UserInfoDao">
+
+    <!-- 查询所有用户照片信息 -->
+    <select id="getUserPhoto" resultType="java.lang.String">
+        SELECT
+          photo
+        FROM
+          t_users
+        WHERE photo IS NOT NULL
+	</select>
+
+
+    <!-- 根据用户ID查询用户信息 -->
+    <select id="getUserInfo" parameterType="int" resultType="UserPO">
+        SELECT
+          u.id AS userId,
+          u.userName,
+          u.photo AS userPhoto,
+          uc.sn AS cardNO
+        FROM
+          t_users u
+          LEFT JOIN u_user_card uc
+            ON u.id = uc.userId
+        WHERE u.id=#{userId}
+	</select>
+	
+	<!-- 查询一个区域下 某个用户的 行为轨迹 -->
+	<select id="getUserLocations" parameterType="java.util.Map" resultType="java.lang.String">
+		SELECT 
+		   ud.sn
+		FROM 
+		   u_location  ul
+		LEFT JOIN 
+		   u_user_card uc  ON  ul.`userId` = uc.`userId`
+		LEFT JOIN 
+		   u_zone_exciter  ze ON ul.`deviceId` = ze.`deviceId`
+		LEFT JOIN 
+		   u_device  ud   ON  ul.deviceId = ud.id
+		WHERE  
+		    uc.`sn` = #{cardNO}
+		AND   FIND_IN_SET(ze.zoneId, fun_getChildren(#{zoneId}))
+		AND ul.`currentTime` >=  (
+		 SELECT 
+				ua.`occurrenceTime` 
+			FROM 
+				u_user_action ua 
+			LEFT JOIN 
+			        u_action_exciter ae ON ua.`actionTempletId` = ae.`actionTempletId`
+			LEFT JOIN 
+				u_action_templet  uat ON ae.`actionTempletId` = uat.`id` 
+			LEFT JOIN 
+				u_device ud ON ae.`deviceId` = ud.`id`
+			LEFT JOIN 
+				u_user_card  uc ON uc.`userId` = ua.`userId`
+			WHERE   uc.`sn` = #{cardNO}
+			AND     uat.`type` = 3
+			AND     ud.`sn` = #{exciterSn} 
+			ORDER BY ua.`occurrenceTime` DESC
+			LIMIT 0,1
+		)
+		ORDER BY ul.`currentTime`
+	</select>
+</mapper>

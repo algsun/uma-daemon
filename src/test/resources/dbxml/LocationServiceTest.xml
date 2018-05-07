@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+
+  <t_users id="1" userEmail="no-reply-galaxy@microwise-system.com" logicGroupId="1" userName="大头" userPassword="121212" sex="1" isDisable="0" token="token1" isActive="1" />
+  <t_users id="2" userEmail="962097540@qq.com" logicGroupId="1" userName="爷爷" userPassword="121212" sex="2" isDisable="0" token="token2" isActive="0" />
+  <u_location id="1" userId="1" deviceId="01" currentTime="1367031397562" />
+  <u_location id="2" userId="1" deviceId="02" currentTime="1367031397563" />
+  <u_location id="3" userId="1" deviceId="03" currentTime="1367031397564" />
+  <u_location id="4" userId="1" deviceId="04" currentTime="1367031397565" />
+</dataset>

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans   
+	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd   
+	http://www.springframework.org/schema/aop   
+	http://www.springframework.org/schema/aop/spring-aop-3.0.xsd   
+	http://www.springframework.org/schema/tx   
+	http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+	http://www.springframework.org/schema/context  
+	http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+	<!-- 使用注解配置bean和注入 -->
+	<context:annotation-config />
+	<context:component-scan base-package="com.microwise.uma"/>
+	<aop:aspectj-autoproxy/>
+	<!-- 引入properties文件 -->
+	<bean id="uma-propertyConfig"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="order" value="3" />
+		<property name="ignoreUnresolvablePlaceholders" value="true" />
+		<property name="locations">
+			<list>
+				<value>classpath:config.properties
+				</value>
+			</list>
+		</property>
+	</bean>
+
+	<!-- 配置数据源 -->
+	<bean id="uma-dataSource" 
+		class="com.mchange.v2.c3p0.ComboPooledDataSource" 
+		destroy-method="close">
+		<!-- 数据库驱动 -->
+		<property name="driverClass" value="${jdbc.driver}" />
+		<!-- 连接URL串 -->
+		<property name="jdbcUrl" value="${jdbc.url}" />
+		<!-- 连接用户名 -->
+		<property name="user" value="${jdbc.username}" />
+		<!-- 连接密码 -->
+		<property name="password" value="${jdbc.password}" />
+		<!-- 初始化连接池时连接数量为5个 -->
+		<property name="initialPoolSize" value="5" />
+		<!-- 允许最小连接数量为5个 -->
+		<property name="minPoolSize" value="5" />
+		<!-- 允许最大连接数量为20个 -->
+		<property name="maxPoolSize" value="20" />
+		<!-- 允许连接池最大生成100个PreparedStatement对象 -->
+		<property name="maxStatements" value="100" />
+		<!-- 连接有效时间，连接超过3600秒未使用，则该连接丢弃 -->
+		<property name="maxIdleTime" value="3600" />
+		<!-- 连接用完时，一次产生的新连接步进值为2 -->
+		<property name="acquireIncrement" value="2" />
+		<!-- 获取连接失败后再尝试10次，再失败则返回DAOException异常 -->
+		<property name="acquireRetryAttempts" value="10" />
+		<!-- 获取下一次连接时最短间隔600毫秒，有助于提高性能 -->
+		<property name="acquireRetryDelay" value="600" />
+		<!-- 检查连接的有效性，此处小弟不是很懂什么意思 -->
+		<property name="testConnectionOnCheckin" value="true" />
+		<!-- 每个1200秒检查连接对象状态 -->
+		<property name="idleConnectionTestPeriod" value="1200" />
+		<!-- 获取新连接的超时时间为10000毫秒 -->
+		<property name="checkoutTimeout" value="10000" />
+	</bean>
+
+	<!-- 加载mybatis -->
+	<bean id="uma-sqlSessionFactory" 
+		class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="configLocation" 
+			value="classpath:mybatis.xml"></property>
+		<property name="dataSource" ref="uma-dataSource" />
+	</bean>
+	
+	<bean name="scheduleFactory" class="org.quartz.impl.StdSchedulerFactory"/>
+    <bean name="scheduler" factory-bean="scheduleFactory" factory-method="getScheduler" init-method="start"
+          destroy-method="shutdown"/>
+	<!-- 启动数据库写操作quartz 任务 -->
+    <bean name="persistenceStateQuartz" class="com.microwise.uma.quartz.StatsJobInitor" init-method="initQuartz" lazy-init="false">
+        <constructor-arg index="0" ref="scheduler"/>
+    </bean>
+
+	<!-- 配置事务管理器 -->
+	<bean id="uma-transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="uma-dataSource" />
+	</bean>
+	<tx:annotation-driven transaction-manager="uma-transactionManager" />
+
+    <bean name="resetCheckFlagJobInitor" class="com.microwise.uma.job.ResetCheckFlagJobInitor"
+          init-method="init" lazy-init="false"/>
+    <bean name="countStayTimeJobInitor" class="com.microwise.uma.job.CountStayTimeJobInitor"
+          init-method="init" lazy-init="false"/>
+</beans>

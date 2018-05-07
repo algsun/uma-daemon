@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+
+    <u_device id="1" type="1" deviceId="0002" name="读卡器" sn="12345679" version="1.0.1" enable="1" state="1" createTime="2013-02-25 12:01:01" siteId="123" />
+
+    <u_device id="2" type="2" name="激发器" sn="11111112"  voltage="2" enable="1" state="1" createTime="2013-02-25 12:01:01" siteId="123" />
+
+    <u_device id="3" type="2" name="激发器2" sn="22222222" voltage="2.5" enable="1" state="1" createTime="2013-02-25 12:01:01" siteId="123" />
+    
+    <u_device id="4" type="3" deviceId="0002" name="电子卡1" sn="12345678"  version="1.0.1" enable="1" state="1" createTime="2013-02-25 12:01:01" siteId="123" />
+
+    <u_device id="5" type="3" name="电子卡2" sn="11111111"  voltage="2" enable="1" state="1" createTime="2013-02-25 12:01:01" siteId="123"/>
+
+    <u_device id="6" type="3" name="电子卡3" sn="22222223" voltage="2.5" enable="1" state="1" createTime="2013-02-25 12:01:01" siteId="123" />
+</dataset>

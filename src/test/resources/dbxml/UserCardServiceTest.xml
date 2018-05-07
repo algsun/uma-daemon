@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+	<t_users id="1" userEmail="no-reply-galaxy@microwise-system.com"
+		logicGroupId="1" userName="大头" userPassword="121212" sex="1"
+		isDisable="0" token="token1" isActive="1" />
+	<t_users id="2" userEmail="962097540@qq.com" logicGroupId="1"
+		userName="爷爷" userPassword="121212" sex="2" isDisable="0" token="token2"
+		isActive="0" />
+	<u_user_card id="1" userId="1" sn="12345678" />
+	<u_user_card id="2" userId="2" sn="11111111" />
+</dataset>

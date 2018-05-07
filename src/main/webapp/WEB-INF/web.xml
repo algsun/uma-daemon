@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:javaee="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+	<javaee:display-name>uma-daemon(人员管理后台)</javaee:display-name>
+	<session-config>
+		<session-timeout>30</session-timeout>
+	</session-config>
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>classpath*:applicationContext.xml</param-value>
+	</context-param>
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+	<listener>
+		<listener-class>
+			com.microwise.uma.servlet.CollectionListener</listener-class>
+	</listener>
+   
+    <welcome-file-list>index.jsp</welcome-file-list>
+
+	<servlet>
+		<servlet-name>ServiceServlet</servlet-name>
+		<servlet-class>com.microwise.uma.servlet.ServiceServlet</servlet-class>
+		<load-on-startup>0</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ServiceServlet</servlet-name>
+		<url-pattern>/ServiceServlet</url-pattern>
+	</servlet-mapping>
+
+    <servlet>
+        <servlet-name>UserStayTimeServlet</servlet-name>
+        <servlet-class>com.microwise.uma.servlet.UserStayTimeServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>UserStayTimeServlet</servlet-name>
+        <url-pattern>/UserStayTimeServlet</url-pattern>
+    </servlet-mapping>
+
+</web-app>

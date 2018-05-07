@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mybatis.AnalyseStateDao">
+	
+	<insert id="saveAnalyseState" parameterType="AnalyseStatePO" useGeneratedKeys="true" keyProperty="id" >
+		insert into 
+		u_analyse_state(userid,u_location_time,u_action_time) 
+		values  
+		(#{userId},#{locationTime},#{actionTime}) 
+	</insert> 
+	
+	<!-- 查询 -->
+	<select id="findAnalyse" parameterType="java.lang.Long"
+		resultType="AnalyseStatePO">
+	<![CDATA[
+		SELECT ID as id,
+		USERID as userId,
+		u_location_time as locationTime,
+		u_action_time as actionTime
+		FROM 
+			u_analyse_state as d
+		WHERE 
+			d.userid = #{value}
+	]]>
+	</select>
+	
+	<!-- 更新历史位置分析时间 -->
+	<select id="updateAnalyseLocationTime" parameterType="java.util.Map" >
+	update u_analyse_state d
+	set 
+		d.u_location_time=#{locationTime}
+		WHERE 
+			d.userid = #{userId}
+	</select>
+	
+	<!-- 更新行为分析时间 -->
+	<select id="updateAnalyseActionTime" parameterType="java.util.Map" >
+	update u_analyse_state d
+	set 
+		d.u_action_time=#{actionTime}
+		WHERE 
+			d.userid = #{userId}
+	</select>
+</mapper>

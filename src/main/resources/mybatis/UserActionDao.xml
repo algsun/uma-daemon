@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mybatis.UserActionDao">
+
+    <!-- 批量入库 -->
+    <insert id="saveActionsBatch" parameterType="UserActionPO">
+        insert into
+        u_user_action
+        (userId, actionTempletId, type, occurrenceTime
+        )
+        values
+        <foreach collection="list" item="item" index="index"
+                 separator=",">
+            (#{item.userId},#{item.tempId},#{item.type},#{item.occtime})
+        </foreach>
+    </insert>
+
+    <!-- 查询 -->
+    <select id="findUserActions" parameterType="java.util.Map"
+            resultType="UserActionPO">
+        SELECT d.id as id,
+        d.userId as userId,
+        d.actionTempletId as tempId,
+        d.type as type,
+        d.occurrenceTime as occtime,
+        t.parentId AS parentActionTempletId,
+        t.name AS actionName,
+        d.checkFlag as checkFlag
+        FROM
+        u_user_action d,
+        u_action_templet t
+        WHERE
+        d.userId = #{userId}
+        and
+        (
+        d.type = 3
+        or
+        d.type = 4
+        )
+        AND d.actiontempletid = t.id
+        And d.checkFlag = 0
+        <if test="occtime != null">
+            and
+            d.occurrenceTime >= #{occtime}
+        </if>
+        order by occtime , type
+    </select>
+
+    <!-- 查询某个时间后的用户最新的行为 -->
+    <select id="findUserLastActions" parameterType="java.lang.Long"
+            resultType="UserActionPO">
+        SELECT
+        *
+        FROM(
+        SELECT
+        t.id as id,
+        t.userid as userId,
+        t.actionTempletId as tempId,
+        t.type as type,
+        t.occurrenceTime as occtime,
+        a.parentId as parentActionTempletId
+        FROM
+        u_user_action t,
+        u_action_templet a
+        where
+        t.actionTempletId = a.id
+        <if test="value != null">
+            and
+            t.occurrenceTime > #{value}
+        </if>
+        ORDER BY t.`occurrenceTime` DESC
+        ) a
+        GROUP BY a.userid
+    </select>
+
+    <!-- 更新分析状态 -->
+    <update id="updateActionFlag" parameterType="UserActionPO">
+		update u_user_action
+		set checkFlag = #{checkFlag}
+		where id = #{id}
+	</update>
+
+
+    <!-- 保存往返行为 -->
+    <insert id="saveCircuitedActionsBatch" parameterType="CircuitedActionPO">
+        insert into
+        u_action_census
+        (userId, actionTempletId, goActionTempId, backActionTempId,goTime,backTime
+        )
+        values
+        <foreach collection="list" item="item" index="index"
+                 separator=",">
+            (#{item.userId},#{item.actionTempletId},#{item.goActionTempId},#{item.backActionTempId},#{item.goTime},#{item.backTime})
+        </foreach>
+    </insert>
+
+    <select id="findUserActionsByCheckFlag" parameterType="java.lang.Integer" resultType="UserActionPO">
+        SELECT
+          t.id AS id,
+          t.userid AS userId,
+          t.actionTempletId AS tempId,
+          t.type AS TYPE,
+          t.occurrenceTime AS occtime,
+          t.checkFlag AS checkFlag
+        FROM
+          u_user_action t
+        WHERE t.checkFlag = #{value}
+    </select>
+
+    <select id="findUserCensusWithoutSingleRule" parameterType="java.util.HashMap" resultType="UserCensusPO">
+        SELECT
+          t.id AS id,
+          t.userid AS userId,
+          t.actionTempletId AS tempId,
+          u.`type`,
+          t.`goTime`,
+          t.`backTime`
+        FROM
+          `u_action_census` t
+          INNER JOIN `u_action_templet` u
+            ON u.`id` = t.`actionTempletId`
+          INNER JOIN `u_action_templet` ua
+            ON t.`actionTempletId` = ua.`id`
+        WHERE u.`type` = 2
+          AND t.`goTime` BETWEEN #{startTime}
+          AND #{endTime}
+          AND ua.`zoneId` = #{zoneId}
+        ORDER BY t.`goTime`
+    </select>
+
+    <select id="isExistUserStayTimesRecord" parameterType="java.util.HashMap" resultType="java.lang.Integer">
+           SELECT
+              COUNT(1)
+           FROM
+              `u_user_stay_times` u
+           WHERE DATE_FORMAT(u.`createTime`, '%Y-%m-%d') = DATE_FORMAT(#{createTime}, '%Y-%m-%d')
+           AND u.`zoneId` = #{zoneId}
+    </select>
+
+    <insert id="saveUserStayTimes" parameterType="java.util.HashMap">
+        INSERT INTO `u_user_stay_times` (zoneId, stayTimes, createTime)
+            VALUES
+              (#{zoneId}, #{stayTimes}, #{createTime})
+    </insert>
+
+    <update id="updateUserStayTimes" parameterType="java.util.HashMap">
+        UPDATE
+          `u_user_stay_times`
+        SET
+          stayTimes = #{stayTimes}
+        WHERE zoneId = #{zoneId}
+          AND DATE_FORMAT(createTime, '%Y-%m-%d') = DATE_FORMAT(#{createTime}, '%Y-%m-%d')
+    </update>
+</mapper>

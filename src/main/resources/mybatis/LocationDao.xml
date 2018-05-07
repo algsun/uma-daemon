@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mybatis.LocationDao">
+	<!-- 批量入库位置点 --> 
+	<insert id="saveLoationBacth" 
+		parameterType="LocationPO" > 
+		insert into 
+		u_location(userId, deviceId ,currentTime ) 
+		values
+		(#{userId},#{deviceId},#{currentTime}) 
+	</insert>
+	
+	<!-- 查询位置点按时间 --> 
+	<select id="findLoation" parameterType="java.util.Map" resultType="LocationPO"> 
+		select 
+		id as id ,
+		userId as userId, 
+		deviceId as deviceId,
+		currentTime  as currentTime
+		from
+		u_location d
+		where
+		d.userid = #{userId}
+		<if test="curTime != null">
+		and
+		d.currentTime >= #{curTime}
+		</if>
+		order by currentTime
+	</select>
+</mapper>

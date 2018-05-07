@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mybatis.UserCardRelationDao">
+	
+	<!-- 查询关系 -->
+	<select id="findRelations" resultType="UserCard">
+	<![CDATA[
+		SELECT id as id,
+		userId as userId,
+		sn as cardSn
+		FROM 
+			u_user_card as d
+	]]>
+	</select>
+</mapper>

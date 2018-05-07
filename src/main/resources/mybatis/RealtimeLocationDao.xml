@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mybatis.RealtimeLocationDao">
+	<!-- 批量入库位置点 --> 
+	<insert id="saveLoationBacth" 
+		parameterType="RealtimeLocationPO" > 
+		insert into 
+		u_realtime_location(userId, deviceId ,occurrenceTime ) 
+		values
+		<foreach 
+			collection="list" item="item" index="index" separator=","> 
+		(#{item.userId},#{item.deviceId},#{item.occurrenceTime}) 
+		</foreach>
+	</insert>
+	
+	<!-- 查询 -->
+	<select id="findRealtimeLocations"  resultType="RealtimeLocationPO">
+		SELECT 
+		id as id,
+		userId as userId,
+		deviceId as deviceId,
+		occurrenceTime as occurrenceTime
+		FROM 
+			u_realtime_location as d
+	</select>
+	
+	<update id="updateRealtimeLocation" parameterType="RealtimeLocationPO">
+		UPDATE 
+			u_realtime_location AS r
+		SET
+			r.deviceId = #{deviceId},
+			r.occurrenceTime = #{occurrenceTime}
+		WHERE 
+			r.userId = #{userId}
+	</update>
+</mapper>

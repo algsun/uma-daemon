@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mybatis.ZoneDao">
+
+    <select id="findPeopleInfZoneByZoneId" parameterType="java.util.Map"
+            resultType="UserActionPO">
+            SELECT
+              a.userId AS userId,
+              a.occurrenceTime AS occtime,
+              u.userName AS userName,
+              u.photo AS userPhoto,
+              z.zoneId AS zoneId,
+              z.zoneName AS zoneName,
+              z.parentId AS parentId
+            FROM
+              u_user_action a,
+              u_action_templet t,
+              t_zone z,
+              t_users u
+            WHERE a.actionTempletId = t.id
+              AND t.zoneId = #{zoneId}
+              AND t.zoneId = z.zoneId
+              AND a.userId = u.id
+              AND a.checkFlag = 0
+              AND (a.type = 3
+                OR a.type = 4)
+            ORDER BY occurrenceTime DESC
+	</select>
+
+    <select id="findZonePeoples" parameterType="java.util.Map" resultType="UserActionPO">
+	select * 
+	from (
+	    SELECT
+              a.userId AS userId,
+              a.`currentTime` AS occtime,
+              u.userName AS userName,
+              u.photo AS userPhoto,
+              z.zoneId AS zoneId,
+              z.zoneName AS zoneName,
+              z.parentId AS parentId
+         FROM
+              u_location a
+         LEFT JOIN  t_users u ON a.`userId` = u.`id`
+         LEFT JOIN  u_zone_exciter  ue  ON a.`deviceId` = ue.`deviceId`
+         LEFT JOIN  t_zone  z   ON ue.`zoneId` = z.`zoneId`
+         WHERE a.`currentTime` > #{date}
+         AND  
+            FIND_IN_SET(ue.zoneId, fun_getChildren(#{zoneId}))
+         ORDER BY a.`currentTime` desc
+      ) b  GROUP BY b.userId
+      ORDER BY b.occtime DESC
+	</select>
+
+    <!-- 查询某天进入过 区域的人员 -->
+    <select id="findUserInfoByZoneId" parameterType="java.util.Map" resultType="UserPO">
+	    SELECT
+              a.userId AS userId,
+              u.userName AS userName,
+              uc.sn     AS cardNO
+         FROM
+              u_location a
+         LEFT JOIN  t_users u ON a.`userId` = u.`id`
+         LEFT JOIN  u_zone_exciter  ue  ON a.`deviceId` = ue.`deviceId`
+         LEFT JOIN  t_zone  z   ON ue.`zoneId` = z.`zoneId`
+         LEFT JOIN  u_user_card uc on a.userId = uc.userId
+         WHERE FROM_UNIXTIME(a.`currentTime`/1000,'%Y-%m-%d') = #{date}
+         AND  
+            FIND_IN_SET(ue.zoneId, fun_getChildren(#{zoneId}))
+         GROUP BY a.userId
+	</select>
+
+    <!--获取用户活动的区域编号-->
+    <select id="findUserActionZones" resultType="java.lang.String">
+	    SELECT DISTINCT
+          u.`zoneId`
+        FROM
+          `u_action_templet` u
+	</select>
+</mapper>

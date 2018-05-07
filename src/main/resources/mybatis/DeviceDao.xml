@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mybatis.DeviceDao">
+	
+	<insert id="saveDeivce" parameterType="DevicePO" useGeneratedKeys="true" keyProperty="id" >
+		insert into 
+		u_device(type,deviceId,name,sn,ip,port,voltage,version,state,enable,createTime , updateTime,siteId) 
+		values  
+		(#{type},#{deviceId},#{name},#{sn},#{ip},#{port},#{voltage},#{version},#{state},#{enable},#{createTime},#{createTime},#{siteId}) 
+	</insert> 
+	
+	<!-- 批量入库 --> 
+	<insert id="saveDeivceBatch" 
+		parameterType="DevicePO" > 
+		insert into 
+		u_device
+		(type,		deviceId,		name,		sn,		ip,
+		port,		voltage,	version,	state,		enable,		createTime , updateTime,siteId) 
+		values
+		<foreach 
+			collection="list" item="item" index="index"  separator="," >   
+		(#{item.type},#{item.deviceId},#{item.name},#{item.sn},#{item.ip},
+		#{item.port},#{item.voltage},#{item.version},#{item.state},#{item.enable},#{item.createTime},#{item.createTime},#{item.siteId})
+		</foreach>
+	</insert>
+	
+	<!-- 查询 -->
+	<select id="findDevices" parameterType="java.lang.Integer"
+		resultType="DevicePO">
+	<![CDATA[
+		SELECT id as id,
+		type as type,
+		deviceId as deviceId,
+		name as name,
+		sn as sn,
+		ip as ip,
+		port as port,
+		voltage as voltage, 
+		version as version,
+		state as state,
+		enable as enable, 
+		createTime as createTime,
+		updateTime as updateTime
+		FROM 
+			u_device as d
+		WHERE 
+			d.type = #{value}
+	]]>
+	</select>
+	
+	<!--设备信息更新 -->
+	<insert id="updDeivce" parameterType="DevicePO"  >
+		update  
+		u_device
+		set type=#{type},
+		deviceId = #{deviceId},
+		name=#{name},
+		sn=#{sn},
+		ip=#{ip},
+		port=#{port},
+		voltage=#{voltage},
+		createTime=#{createTime} ,
+		updateTime=#{updateTime}
+		where id = #{id}
+	</insert> 
+	
+</mapper>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mybatis.RegularDao">
+
+	<!-- 查询规则 -->
+	<select id="findRegulars" parameterType="java.lang.Integer"
+		resultType="Reguler"> 
+	<![CDATA[
+		SELECT id as id,
+		parentId as parentId,
+		name as name,
+		type as type,
+		enable as enable
+		FROM 
+			u_action_templet as d
+		where 
+			d.enable = 1
+			and 
+			d.type = #{value}
+			and 
+			d.parentId != 0
+	]]>
+	</select>
+
+	<!-- 查询规则 -->
+	<select id="findAllRegulars" resultType="Reguler"> 
+	<![CDATA[
+		SELECT id as id,
+		parentId as parentId,
+		name as name,
+		type as type,
+		enable as enable
+		FROM 
+			u_action_templet as d
+		where 
+			d.enable = 1
+	]]>
+	</select>
+
+	<!-- 查询规则 -->
+	<select id="findParentRegulars" parameterType="java.util.Map"
+		resultType="Reguler"> 
+	<![CDATA[
+		SELECT id as id,
+		parentId as parentId,
+		name as name,
+		type as type,
+		enable as enable,
+		zoneId as zoneId
+		FROM 
+			u_action_templet as d
+		where 
+			d.enable = 1
+			and 
+			d.type = #{type}
+			and 
+			d.parentId = #{parentId}
+	]]>
+	</select>
+
+	<!-- 查询规则 -->
+	<select id="findMaxRegularLen" resultType="Integer"> 
+	<![CDATA[
+		select max(t.c) from (
+			select count(actiontempletId) as c , 
+			actiontempletId 
+			from  u_action_exciter t
+			group by actionTempletId) t
+	]]>
+	</select>
+
+
+</mapper>

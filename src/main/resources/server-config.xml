@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<server>
+	<config>
+		<server-host>192.168.40.161</server-host>
+		<server-port>60001</server-port>
+		<server-bufferSize>4096</server-bufferSize>
+		<server-processorNums></server-processorNums>
+		<server-idleTime>10</server-idleTime>
+		<server-codecFilter>com.microwise.demo.collection.CollectionFilterFactory</server-codecFilter>
+		<server-handler>com.microwise.demo.collection.handler.UmaTCPHandler</server-handler>
+	</config>
+</server>

@@ -1,0 +1,19 @@
+数据处理流程
+
+UmaTCPHandler
+->
+   [MessageReceiveController]
+->
+MessageBufferCheckProcessor
+->
+    [PackCheckController]
+->
+MessagePackParseProcessor
+->
+    [PackToPoContoller]
+->
+PackDisassemblyProcessor
+->
+    [PackToPoContoller]
+->
+PackPersistenceProcessor
